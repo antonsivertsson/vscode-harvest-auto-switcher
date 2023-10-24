@@ -1,0 +1,80 @@
+{
+  "name": "vscode-harvest-auto-switcher",
+  "displayName": "Harvest Auto Switcher",
+  "description": "",
+  "author": {
+    "name": "Anton Sivertsson",
+    "email": "sivertsson.anton@gmail.com",
+    "url": "https://github.com/antonsivertsson/"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-harvest-auto-switcher.updateHarvestToken",
+        "title": "Harvest Auto Switcher: Set Harvest Access Token and Account",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "vscode-harvest-auto-switcher.restart",
+        "title": "Harvest Auto Switcher: Restart",
+        "icon": "$(play)"
+      },
+      {
+        "command": "vscode-harvest-auto-switcher.pause",
+        "title": "Harvest Auto Switcher: Pause",
+        "icon": "$(debug-pause)"
+      },
+      {
+        "command": "vscode-harvest-auto-switcher.setDefaultTask",
+        "title": "Harvest Auto Switcher: Add default task for path",
+        "shortTitle": "Add default task",
+        "icon": "$(bookmark)"
+      },
+      {
+        "command": "vscode-harvest-auto-switcher.changeTask",
+        "title": "Harvest Auto Switcher: Change current task",
+        "shortTitle": "Change Task",
+        "icon": "$(arrow-swap)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run esbuild-base --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "esbuild": "pnpm run esbuild-base --sourcemap",
+    "esbuild-watch": "pnpm run esbuild-base --sourcemap --watch"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.2",
+    "@types/node": "18.x",
+    "@types/node-fetch": "^2.6.7",
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "@vscode/test-electron": "^2.3.4",
+    "esbuild": "^0.19.5",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
