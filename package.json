@@ -26,8 +26,8 @@
         "icon": "$(edit)"
       },
       {
-        "command": "vscode-harvest-auto-switcher.restart",
-        "title": "Harvest Auto Switcher: Restart",
+        "command": "vscode-harvest-auto-switcher.unpause",
+        "title": "Harvest Auto Switcher: Resume",
         "icon": "$(play)"
       },
       {
@@ -37,7 +37,7 @@
       },
       {
         "command": "vscode-harvest-auto-switcher.setDefaultTask",
-        "title": "Harvest Auto Switcher: Add default task for path",
+        "title": "Harvest Auto Switcher: Add default task",
         "shortTitle": "Add default task",
         "icon": "$(bookmark)"
       },
