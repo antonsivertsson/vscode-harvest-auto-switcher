@@ -46,6 +46,18 @@
         "title": "Harvest Auto Switcher: Change current task",
         "shortTitle": "Change Task",
         "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "vscode-harvest-auto-switcher.removeDefaultTask",
+        "title": "Harvest Auto Switcher: Remove default task",
+        "shortTitle": "Remove task",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "vscode-harvest-auto-switcher.toggleSwitching",
+        "title": "Harvest Auto Switcher: Toggle Switching",
+        "shortTitle": "Toggle",
+        "icon": "$(arrow-swap)"
       }
     ]
   },
