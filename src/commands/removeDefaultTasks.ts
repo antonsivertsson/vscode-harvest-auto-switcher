@@ -5,7 +5,7 @@ const removeDefaultTask = (store: Store) => async () => {
   const taskMap = store.readTaskMap();
   if (Object.keys(taskMap).length === 0) {
     await vscode.window.showInformationMessage('No tasks added. Run "Add default task" to get started.');
-    return; 
+    return;
   }
   const selected = await vscode.window.showQuickPick(Object.keys(taskMap).map((path) => {
     const info = taskMap[path];

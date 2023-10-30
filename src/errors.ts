@@ -12,10 +12,18 @@ class HarvestInvalidPauseTimeError extends Error {
     constructor(message: string) {
     super(message);
     this.name = "HarvestInvalidPauseTimeError";
-  }
+    }
+}
+
+class HarvestLockedEntryError extends Error {
+    constructor(message: string) {
+    super(message);
+    this.name = "HarvestLockedEntryError";
+    }
 }
 
 export {
   NoTokenError,
   HarvestInvalidPauseTimeError,
+  HarvestLockedEntryError,
 };

@@ -7,11 +7,11 @@ import Tracker from "../tracker";
  * @param harvestController 
  * @returns 
  */
-const pauseEntry = (harvestController: Harvest, tracker: Tracker) => async () => {
-  const activeEntry = await harvestController.getActiveTimeEntry();
+const stopEntry = (harvestController: Harvest, tracker: Tracker) => async () => {
+  const activeEntry = await harvestController.get.activeTimeEntry();
   if (activeEntry) {
-    await harvestController.stopEntry(activeEntry.id);
-    tracker.activeEntry = {
+    await harvestController.update.stopEntry(activeEntry.id);
+    tracker.lastActiveEntry = {
       projectCode: activeEntry.project.code,
       projectName: activeEntry.project.name,
       taskName: activeEntry.task.name,
@@ -25,4 +25,4 @@ const pauseEntry = (harvestController: Harvest, tracker: Tracker) => async () =>
   tracker.updateStatusBar();
 };
 
-export default pauseEntry;
+export default stopEntry;

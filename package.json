@@ -21,35 +21,30 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-harvest-auto-switcher.updateHarvestToken",
+        "command": "vscode-harvest-auto-switcher.setHarvestToken",
         "title": "Harvest Auto Switcher: Set Harvest Access Token and Account",
         "icon": "$(edit)"
       },
       {
-        "command": "vscode-harvest-auto-switcher.unpause",
-        "title": "Harvest Auto Switcher: Resume",
-        "icon": "$(play)"
-      },
-      {
         "command": "vscode-harvest-auto-switcher.pause",
-        "title": "Harvest Auto Switcher: Pause",
+        "title": "Harvest Auto Switcher: Stop Entry",
         "icon": "$(debug-pause)"
       },
       {
-        "command": "vscode-harvest-auto-switcher.setDefaultTask",
-        "title": "Harvest Auto Switcher: Add default task",
-        "shortTitle": "Add default task",
+        "command": "vscode-harvest-auto-switcher.setAssociatedTask",
+        "title": "Harvest Auto Switcher: Set associated task",
+        "shortTitle": "Add associated task",
         "icon": "$(bookmark)"
       },
       {
-        "command": "vscode-harvest-auto-switcher.changeTask",
-        "title": "Harvest Auto Switcher: Change current task",
+        "command": "vscode-harvest-auto-switcher.startEntry",
+        "title": "Harvest Auto Switcher: Start Entry",
         "shortTitle": "Change Task",
-        "icon": "$(arrow-swap)"
+        "icon": "$(play)"
       },
       {
-        "command": "vscode-harvest-auto-switcher.removeDefaultTask",
-        "title": "Harvest Auto Switcher: Remove default task",
+        "command": "vscode-harvest-auto-switcher.removeAssociatedTask",
+        "title": "Harvest Auto Switcher: Remove associated task",
         "shortTitle": "Remove task",
         "icon": "$(trash)"
       },

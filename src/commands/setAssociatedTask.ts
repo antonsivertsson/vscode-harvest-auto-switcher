@@ -3,10 +3,11 @@ import * as path from 'path';
 
 import Harvest from '../harvest';
 import Store, { TaskInfo } from '../store';
+import Tracker from '../tracker';
 
 type DefaultTaskQuickPickItem = vscode.QuickPickItem & { value: TaskInfo };
 
-const setDefaultTask = (harvestController: Harvest, store: Store) => async () => {
+const setAssociatedTask = (harvestController: Harvest, store: Store, tracker: Tracker) => async () => {
   if (harvestController.projectTasks.length === 0) {
     await harvestController.refreshProjectTasks();
   }
@@ -14,8 +15,8 @@ const setDefaultTask = (harvestController: Harvest, store: Store) => async () =>
     throw new Error("No active editor selected");
   }
   // FIXME: Make sure lastViewedFile always is a file, otherwise path.dirname might give weird results
-  const filePath = store.lastViewedFile !== ''
-    ? store.lastViewedFile : vscode.workspace.workspaceFolders
+  const filePath = tracker.lastViewedFile !== ''
+    ? tracker.lastViewedFile : vscode.workspace.workspaceFolders
       ? vscode.workspace.workspaceFolders[0].uri.path : '';
   
   const pathPlaceholder = path.dirname(filePath);
@@ -38,9 +39,8 @@ const setDefaultTask = (harvestController: Harvest, store: Store) => async () =>
       return [...result, ...tasksWithProjectName];
   }, [] as DefaultTaskQuickPickItem[]);
   
-  quickPickItems.push(({ label: 'DONT TRACK', value: { task: { id: -1, name: 'DONT TRACK'}, project: { id: -1, name: 'NO TRACKING', code: 'NO'}} }));
-
-  // TODO: Add extra task for DONT TRACK
+  // quickPickItems.push(({ label: 'DONT TRACK', value: { task: { id: -1, name: 'DONT TRACK' }, project: { id: -1, name: 'NO TRACKING', code: 'NO' } } }));
+  
   const selected = await vscode.window.showQuickPick(quickPickItems);
   if (!selected) {
     // Don't save if user cancels
@@ -49,4 +49,4 @@ const setDefaultTask = (harvestController: Harvest, store: Store) => async () =>
   store.addDefaultTask(pathName, selected.value);
 };
   
-export default setDefaultTask;
+export default setAssociatedTask;

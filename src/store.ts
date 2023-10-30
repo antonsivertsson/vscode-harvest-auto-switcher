@@ -17,7 +17,6 @@ type TaskMap = {[path: string]: TaskInfo};
 
 class Store {
   private store: vscode.Memento;
-  lastViewedFile = '';
 
   constructor(keyStore: vscode.Memento) {
     this.store = keyStore;
@@ -52,7 +51,7 @@ class Store {
    * @param fileName
    * @returns the default Harvest task ID associated with the file or a parent folder, else undefined
    */
-  getDefaultTaskFromFile(fileName: string) {
+  getAssociatedTaskForFile(fileName: string) {
     const taskMap = this.readTaskMap();
     let closestMatch = '';
     for (let path of Object.keys(taskMap)) {
@@ -66,7 +65,16 @@ class Store {
     return undefined;
   }
 
-  updateSwitching(enabled: boolean) {
+  setShowSwitchStartNotification(show: boolean) {
+    this.store.update(storeKeys.showSwitchStartNotification, show);
+  }
+
+  getShowSwitchStartNotification() {
+    const show = this.store.get(storeKeys.switching) as boolean | undefined;
+    return show ?? false; // FIXME: Read from settings
+  }
+
+  setSwitching(enabled: boolean) {
     this.store.update(storeKeys.switching, enabled);
   }
 
@@ -74,7 +82,7 @@ class Store {
     const enabled = this.store.get(storeKeys.switching) as boolean | undefined;
     if (enabled === undefined) {
       // If not found, set default value
-      this.store.update(storeKeys.switching, false);
+      this.store.update(storeKeys.switching, false); // FIXME: Read default from settings
       return false;
     }
     return enabled;
