@@ -8,7 +8,7 @@ import { NoTokenError } from './errors';
 import changeTask from './commands/startEntry';
 import setAssociatedTask from './commands/setAssociatedTask';
 import pauseEntry from './commands/stopEntry';
-import removeDefaultTask from './commands/removeDefaultTasks';
+import removeAssociatedTask from './commands/removeAssociatedTasks';
 import toggleSwitching from './commands/toggleSwitching';
 
 let statusBarItem: vscode.StatusBarItem;
@@ -92,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('vscode-harvest-auto-switcher.startEntry', changeTask(harvestController, tracker)));
 	context.subscriptions.push(vscode.commands.registerCommand('vscode-harvest-auto-switcher.setAssociatedTask', setAssociatedTask(harvestController, store, tracker)));
 	context.subscriptions.push(vscode.commands.registerCommand('vscode-harvest-auto-switcher.pause', pauseEntry(harvestController, tracker)));
-	context.subscriptions.push(vscode.commands.registerCommand('vscode-harvest-auto-switcher.removeDefaultTask', removeDefaultTask(store)));
+	context.subscriptions.push(vscode.commands.registerCommand('vscode-harvest-auto-switcher.removeAssociatedTask', removeAssociatedTask(store)));
 	context.subscriptions.push(vscode.commands.registerCommand('vscode-harvest-auto-switcher.toggleSwitching', toggleSwitching(store, tracker)));
 
 	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((e) => {

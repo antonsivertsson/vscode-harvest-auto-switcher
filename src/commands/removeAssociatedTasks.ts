@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import Store from "../store";
 
-const removeDefaultTask = (store: Store) => async () => {
+const removeAssociatedTask = (store: Store) => async () => {
   const taskMap = store.readTaskMap();
   if (Object.keys(taskMap).length === 0) {
     await vscode.window.showInformationMessage('No tasks added. Run "Add default task" to get started.');
@@ -15,8 +15,8 @@ const removeDefaultTask = (store: Store) => async () => {
     };
   }));
   if (selected) {
-    store.removeDefaultTask(selected.value);
+    store.removeAssociatedTask(selected.value);
   }
 };
 
-export default removeDefaultTask;
+export default removeAssociatedTask;

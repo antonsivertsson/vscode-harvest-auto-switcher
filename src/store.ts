@@ -40,7 +40,7 @@ class Store {
     });
   }
 
-  removeDefaultTask(path: string) {
+  removeAssociatedTask(path: string) {
     let map = this.store.get(storeKeys.map) as TaskMap;
     delete map[path];
     this.store.update(storeKeys.map, map);
