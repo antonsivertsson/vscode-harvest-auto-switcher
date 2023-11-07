@@ -54,6 +54,39 @@
         "shortTitle": "Toggle",
         "icon": "$(arrow-swap)"
       }
+    ],
+    "walkthroughs": [
+      {
+        "id": "harvest-auto-switcher-setup",
+        "title": "Getting started with Harvest Auto Switcher",
+        "description": "Learn how to setup and use the Harvest Auto Switcher extension.",
+        "steps": [
+          {
+            "id": "generateaccesstoken",
+            "title": "Get Harvest Access Token",
+            "description": "Before using the extension you need to generate a personal access token for your Harvest account. You can find it [here](https://id.getharvest.com/developers).\n\nTake note of the token and the account id.",
+            "media": {
+              "image": "media/walkthrough-step-1.png",
+              "altText": "Image showing harvest access token page"
+            },
+            "completionEvents": [
+              "onLink:https://id.getharvest.com/developers"
+            ]
+          },
+          {
+            "id": "setaccesstoken",
+            "title": "Save access token & account ID to extension",
+            "media": {
+              "image": "media/walkthrough-step-1.png",
+              "altText": "Image showing harvest access token page"
+            },
+            "description": "**Note:** the access token will be stored in the application memory and will not be sent to any servers unless you have configured [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) to be enabled\n\n[Save access token & account ID](command:vscode-harvest-auto-switcher.setHarvestToken)",
+            "completionEvents": [
+              "onCommand:vscode-harvest-auto-switcher.setHarvestToken"
+            ]
+          }
+        ]
+      }
     ]
   },
   "scripts": {
