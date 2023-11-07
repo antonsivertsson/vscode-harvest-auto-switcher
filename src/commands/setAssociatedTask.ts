@@ -11,17 +11,12 @@ const setAssociatedTask = (harvestController: Harvest, store: Store, tracker: Tr
   if (harvestController.projectTasks.length === 0) {
     await harvestController.refreshProjectTasks();
   }
-  if (!vscode.window.activeTextEditor) {
-    throw new Error("No active editor selected");
-  }
   // FIXME: Make sure lastViewedFile always is a file, otherwise path.dirname might give weird results
-  const filePath = tracker.lastViewedFile !== ''
-    ? tracker.lastViewedFile : vscode.workspace.workspaceFolders
+  const pathPlaceholder = tracker.lastViewedFile !== ''
+    ? path.dirname(tracker.lastViewedFile) : vscode.workspace.workspaceFolders
       ? vscode.workspace.workspaceFolders[0].uri.path : '';
   
-  const pathPlaceholder = path.dirname(filePath);
-  
-  const pathName = await vscode.window.showInputBox({ value: pathPlaceholder });
+  const pathName = await vscode.window.showInputBox({ title: 'Enter file or folder to associate with task', value: pathPlaceholder });
   if (!pathName) {
     // If user cancelled interaction, do nothing
     return;
@@ -41,7 +36,7 @@ const setAssociatedTask = (harvestController: Harvest, store: Store, tracker: Tr
   
   // quickPickItems.push(({ label: 'DONT TRACK', value: { task: { id: -1, name: 'DONT TRACK' }, project: { id: -1, name: 'NO TRACKING', code: 'NO' } } }));
   
-  const selected = await vscode.window.showQuickPick(quickPickItems);
+  const selected = await vscode.window.showQuickPick(quickPickItems, { title: 'Select task to associate with path' });
   if (!selected) {
     // Don't save if user cancels
     return;
