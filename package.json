@@ -17,6 +17,7 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "icon": "media/extension-icon.png",
   "main": "./out/main.js",
   "contributes": {
     "commands": [
@@ -55,6 +56,22 @@
         "icon": "$(arrow-swap)"
       }
     ],
+    "icons": {
+      "harvest-auto-switch": {
+        "description": "The switch icon",
+        "default": {
+          "fontPath": "media/icons.woff2",
+          "fontCharacter": "\\EA04"
+        }
+      },
+      "harvest-auto-timer-running": {
+        "description": "Icon for a running timer",
+        "default": {
+          "fontPath": "media/icons.woff2",
+          "fontCharacter": "\\EA01"
+        }
+      }
+    },
     "walkthroughs": [
       {
         "id": "harvest-auto-switcher-setup",
@@ -64,7 +81,7 @@
           {
             "id": "generateaccesstoken",
             "title": "Get Harvest Access Token",
-            "description": "Before using the extension you need to generate a personal access token for your Harvest account. You can find it [here](https://id.getharvest.com/developers).\n\nTake note of the token and the account id.",
+            "description": "Before using the extension you need to retrieve or generate a personal access token for your Harvest account.\n\nEnter the link below to create a new personal token.\n\n[Get Token](https://id.getharvest.com/developers)",
             "media": {
               "image": "media/walkthrough-step-1.png",
               "altText": "Image showing harvest access token page"
@@ -75,12 +92,12 @@
           },
           {
             "id": "setaccesstoken",
-            "title": "Save access token & account ID to extension",
+            "title": "Save access token & account ID",
             "media": {
-              "image": "media/walkthrough-step-1.png",
+              "image": "media/walkthrough-step-2.png",
               "altText": "Image showing harvest access token page"
             },
-            "description": "**Note:** the access token will be stored in the application memory and will not be sent to any servers unless you have configured [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) to be enabled\n\n[Save access token & account ID](command:vscode-harvest-auto-switcher.setHarvestToken)",
+            "description": "Next, save or copy the values for \"Your Token\" and \"Account ID\" somewhere, click the button below and input each when prompted.\n[Save Access Token & Account ID](command:vscode-harvest-auto-switcher.setHarvestToken)\n\n**Note:** the access token will be stored in the application memory and will not be sent to any servers unless you have configured [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) to be enabled",
             "completionEvents": [
               "onCommand:vscode-harvest-auto-switcher.setHarvestToken"
             ]

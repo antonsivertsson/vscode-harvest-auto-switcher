@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	if (accessToken === '' || accountId === '' || userId === -1) {
 		statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
-		statusBarItem.text = `$(watch) setup`;
+		statusBarItem.text = `$(harvest-auto-timer-running) setup`;
 		statusBarItem.command = 'vscode-harvest-auto-switcher.setHarvestToken';
 	} else { 
 		statusBarItem.command = 'vscode-harvest-auto-switcher.toggleSwitching';
@@ -63,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (err instanceof NoTokenError) {
 				vscode.window.showErrorMessage(err.message);
 				statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
-				statusBarItem.text = `$(watch) login`;
+				statusBarItem.text = `$(harvest-auto-timer-running) login`;
 				statusBarItem.tooltip = 'No valid credentials found';
 				statusBarItem.command = 'vscode-harvest-auto-switcher.setHarvestToken';
 			}

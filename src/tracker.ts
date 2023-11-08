@@ -93,10 +93,10 @@ class Tracker {
    */
   public updateStatusBar() {
     // FIXME: If currently tracking an entry and the project code or name
-    let statusBarText = '$(watch)';
+    let statusBarText = '$(harvest-auto-timer-running)';
     let tooltipText = '';
     if (this.store.getSwitching()) {
-      statusBarText += ' $(arrow-swap)';
+      statusBarText += ' $(harvest-auto-switch)';
     }
     if (this.activeTimer) {
       this.statusBar.color = new vscode.ThemeColor('statusBar.debuggingForeground');
