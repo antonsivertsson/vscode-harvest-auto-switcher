@@ -2,6 +2,7 @@
 import fetch, { RequestInit } from 'node-fetch';
 import { NoTokenError } from './errors';
 import { harvestProjectsToProjectInfo } from './utils';
+import { constants } from './constants';
 
 interface HarvestOptions {
   accessToken: string
@@ -90,6 +91,7 @@ class Harvest {
   private readonly apiEndpoint = 'https://api.harvestapp.com/api/v2';
   private requestHeaders;
   private readonly fetch;
+  private runningMutations: Map<string, number>;
   
   public projectTasks: ProjectTasks[] = [];
 
@@ -97,6 +99,7 @@ class Harvest {
     this.accessToken = options.accessToken;
     this.accountId = options.accountId;
     this.userId = options.userId;
+    this.runningMutations = new Map();
     this.requestHeaders = () => ({
       'Harvest-Account-ID': this.accountId,
       'Authorization': `Bearer ${this.accessToken}`,
@@ -132,95 +135,6 @@ class Harvest {
     this.projectTasks = harvestProjectsToProjectInfo(projectAssignments);
   }
 
-  // async getTimeEntries() {
-  //   try {
-  //     const todayISO = new Date().toISOString().split('T')[0];
-  //     const response = await this.fetch(`/time_entries?user_id=${this.userId}&from=${todayISO}&to=${todayISO}`);
-  //     const data = await response.json() as HarvestResponse.TimeEntries;
-  //     return data;
-  //   } catch (err) {
-  //     // FIXME: Implement
-  //     throw err;
-  //   }
-  // }
-
-  /**
-   * Returns the active time entry if there is one
-   */
-  // async getActiveTimeEntry() {
-  //   try {
-  //     const response = await this.fetch(`/time_entries?is_running=true&user_id=${this.userId}`);
-  //     const data = await response.json() as HarvestResponse.TimeEntries;
-  //     if (data.time_entries.length > 1) {
-  //       // FIXME: If multiple entries, send error message to user with option to automatically stop one?
-  //       throw new Error("More than 1 timer currently running");
-  //     } else if (data.time_entries.length === 0) {
-  //       return null;
-  //     }
-  //     return data.time_entries[0];
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // }
-
-  /**
-   * Stops a time entry for the id if it's running
-   * @param entryId 
-   */
-  // async stopEntry(entryId: number) {
-  //   await this.fetch(`/time_entries/${entryId}/stop`, { method: 'patch' });
-  // }
-
-  /**
-   * Restarts a pre-existing time entry for the id if not already running
-   * @param entryId 
-   */
-  // async startEntry(entryId: number) {
-  //   await this.fetch(`/time_entries/${entryId}/restart`, { method: 'patch' });
-  // }
-
-  // async updateEntryNotes(entryId: number, notes: string) {
-  //   await this.fetch(`/time_entries/${entryId}`, {
-  //     method: 'patch',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //       notes
-  //     })
-  //   });
-  // }
-
-  /**
-   * Creates a new time entry against project and task
-   * Will automatically start this and stop any previously running entries
-   * @param projectId 
-   * @param taskId 
-   * @returns a promise with the id for the new entry
-   */
-  // async addNewEntry(projectId: number, taskId: number, notes?: string) {
-  //   const response = await this.fetch('/time_entries', {
-  //     method: 'post',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       project_id: projectId,
-  //       task_id: taskId,
-  //       spent_date: new Date().toISOString().split('T')[0],
-  //       notes,
-  //     })
-  //   });
-  //   const data = await response.json() as HarvestResponse.TimeEntry;
-  //   return data;
-  // }
-
-  // async getUser() {
-  //   const response = await this.fetch('/users/me');
-  //   const data = await response.json() as HarvestResponse.User;
-  //   return data;
-  // }
-
   public create = ({
     /**
      * Creates a new time entry against project and task
@@ -230,6 +144,14 @@ class Harvest {
      * @returns a promise with the id for the new entry
      */
     newEntry: async (projectId: number, taskId: number, notes?: string) => {
+      const action = 'newEntry';
+      const mutationKey = `${action}_${projectId}_${taskId}`;
+      const mutationStarted = this.runningMutations.get(mutationKey);
+      if (mutationStarted && mutationStarted + constants.MUTATION_TIMEOUT > Date.now()) {
+        // TODO: handled Error or?
+        return;
+      }
+      this.runningMutations.set(mutationKey, Date.now());
       const response = await this.fetch('/time_entries', {
         method: 'post',
         headers: {
@@ -243,6 +165,7 @@ class Harvest {
         })
       });
       const data = await response.json() as HarvestResponse.TimeEntry;
+      this.runningMutations.delete(mutationKey);
       return data;
     }
   });
@@ -253,20 +176,47 @@ class Harvest {
      * @param entryId 
      */
     startEntry: async (entryId: number) => {
-      this.fetch(`/time_entries/${entryId}/restart`, { method: 'patch' });
+      const action = 'startEntry';
+      const mutationKey = `${action}_${entryId}`;
+      const mutationStarted = this.runningMutations.get(mutationKey);
+      if (mutationStarted && mutationStarted + constants.MUTATION_TIMEOUT > Date.now()) {
+        // TODO: handled Error or?
+        
+        return;
+      }
+      this.runningMutations.set(mutationKey, Date.now());
+      await this.fetch(`/time_entries/${entryId}/restart`, { method: 'patch' });
+      this.runningMutations.delete(mutationKey);
     },
     /**
      * Stops a pre-existing time entry if it's running
      * @param entryId 
      */
     stopEntry: async (entryId: number) => {
-      this.fetch(`/time_entries/${entryId}/stop`, { method: 'patch' });
+      const action = 'stopEntry';
+      const mutationKey = `${action}_${entryId}`;
+      const mutationStarted = this.runningMutations.get(mutationKey);
+      if (mutationStarted && mutationStarted + constants.MUTATION_TIMEOUT > Date.now()) {
+        // TODO: handled Error or?
+        return;
+      }
+      this.runningMutations.set(mutationKey, Date.now());
+      await this.fetch(`/time_entries/${entryId}/stop`, { method: 'patch' });
+      this.runningMutations.delete(mutationKey);
     },
 
     /**
      * Updates the notes attached to a time entry
      */
     notes: async (entryId: number, updatedNotes: string) => {
+      const action = 'updateNotes';
+      const mutationKey = `${action}_${entryId}_${updatedNotes}`;
+      const mutationStarted = this.runningMutations.get(mutationKey);
+      if (mutationStarted && mutationStarted + constants.MUTATION_TIMEOUT > Date.now()) {
+        // TODO: handled Error or?
+        return;
+      }
+      this.runningMutations.set(mutationKey, Date.now());
       await this.fetch(`/time_entries/${entryId}`, {
         method: 'patch',
         headers: {
@@ -276,6 +226,7 @@ class Harvest {
           notes: updatedNotes
         })
       });
+      this.runningMutations.delete(mutationKey);
     },
   });
 
