@@ -87,6 +87,9 @@ const startEntry = (harvestController: Harvest, tracker: Tracker) => async () =>
     }
     const newNotes = await vscode.window.showInputBox({ placeHolder: 'Add Notes...' });
     const newEntry = await harvestController.create.newEntry(selectedTask.value.projectId, selectedTask.value.taskId, newNotes);
+    if (!newEntry) {
+      return;
+    }
     tracker.activeTimer = true;
     tracker.lastActiveEntry = {
       projectCode: newEntry.project.code,

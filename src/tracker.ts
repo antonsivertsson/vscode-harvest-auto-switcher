@@ -203,6 +203,9 @@ class Tracker {
         };
       } else {
         const newEntry = await this.harvest.create.newEntry(associatedTask.project.id, associatedTask.task.id);
+        if (!newEntry) {
+          return;
+        }
         this.lastActiveEntry = {
           projectName: newEntry.project.name,
           projectCode: newEntry.project.code,
@@ -272,6 +275,9 @@ class Tracker {
             };
           } else {
             const newEntry = await this.harvest.create.newEntry(associatedTask.project.id, associatedTask.task.id);
+            if (!newEntry) {
+              return;
+            }
             this.lastActiveEntry = {
               projectName: newEntry.project.name,
               projectCode: newEntry.project.code,

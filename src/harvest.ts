@@ -164,6 +164,9 @@ class Harvest {
           notes,
         })
       });
+      if (!response.ok) {
+        throw new Error('Failed to create new entry');
+      }
       const data = await response.json() as HarvestResponse.TimeEntry;
       this.runningMutations.delete(mutationKey);
       return data;
@@ -179,13 +182,16 @@ class Harvest {
       const action = 'startEntry';
       const mutationKey = `${action}_${entryId}`;
       const mutationStarted = this.runningMutations.get(mutationKey);
-      if (mutationStarted && mutationStarted + constants.MUTATION_TIMEOUT > Date.now()) {
+      if (mutationStarted !== undefined && mutationStarted + constants.MUTATION_TIMEOUT > Date.now()) {
         // TODO: handled Error or?
-        
         return;
       }
       this.runningMutations.set(mutationKey, Date.now());
-      await this.fetch(`/time_entries/${entryId}/restart`, { method: 'patch' });
+      const res = await this.fetch(`/time_entries/${entryId}/restart`, { method: 'patch' });
+      if (!res.ok) {
+        // FIXME: Needs better error handling
+        throw new Error('Failed to start timer');
+      }
       this.runningMutations.delete(mutationKey);
     },
     /**
@@ -201,7 +207,11 @@ class Harvest {
         return;
       }
       this.runningMutations.set(mutationKey, Date.now());
-      await this.fetch(`/time_entries/${entryId}/stop`, { method: 'patch' });
+      const res = await this.fetch(`/time_entries/${entryId}/stop`, { method: 'patch' });
+      if (!res.ok) {
+        // FIXME: Needs better error handling
+        throw new Error('Failed to stop timer');
+      }
       this.runningMutations.delete(mutationKey);
     },
 
@@ -217,7 +227,7 @@ class Harvest {
         return;
       }
       this.runningMutations.set(mutationKey, Date.now());
-      await this.fetch(`/time_entries/${entryId}`, {
+      const res = await this.fetch(`/time_entries/${entryId}`, {
         method: 'patch',
         headers: {
           'Content-Type': 'application/json'
@@ -226,6 +236,10 @@ class Harvest {
           notes: updatedNotes
         })
       });
+      if (!res.ok) {
+        // FIXME: Needs better error handling
+        throw new Error('Failed to update notes');
+      }
       this.runningMutations.delete(mutationKey);
     },
   });
@@ -237,6 +251,9 @@ class Harvest {
      */
     user: async () => {
       const response = await this.fetch('/users/me');
+      if (!response.ok) {
+        throw new Error(`Failed to get user. Status: ${response.statusText}`);
+      }
       const data = await response.json() as HarvestResponse.User;
       return data;
     },
