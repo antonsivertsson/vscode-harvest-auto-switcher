@@ -117,7 +117,8 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "esbuild": "pnpm run esbuild-base --sourcemap",
-    "esbuild-watch": "pnpm run esbuild-base --sourcemap --watch"
+    "esbuild-watch": "pnpm run esbuild-base --sourcemap --watch",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.2",
@@ -132,7 +133,8 @@
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
     "nock": "^13.3.8",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "husky": "^8.0.0"
   },
   "dependencies": {
     "node-fetch": "^2.7.0"
