@@ -1,71 +1,56 @@
 # Harvest Auto Switcher for Visual Studio Code
 
-The Harvest Auto Switcher lets you handle your Harvest timesheets from within Visual Studio Code. It includes features to start and stop entries, update notes on entries as well as functionality to automatically switch tasks depending on which file or workspace you're editing.
+*NOTE:* Neither I, nor this extension, have any affiliation with [Harvest](https://harvestapp.com), nor do I guarantee any stable behaviour as it is still in alpha stage!
+
+The Harvest Auto Switcher lets you handle your Harvest timesheets from within Visual Studio Code. It includes features to start and stop entries, update notes on entries as well as automatically switching tasks depending on which file or workspace you're currently editing.
+
+[Documentation](https://spark-toothbrush-494.notion.site/Harvest-Time-Tracker-2fc066c098c9422bbb11fc228d08592a)
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+![Alt auto-switching feature](media/auto-switch.gif)
 
-For example if there is an image subfolder under your extension project workspace:
+- `Set Harvest Access Token and Account` - Setup Harvest integration or change the access token used.
+- `Start entry` - Starts time tracking under a certain project task. Asks you to add or update notes.
+- `Stop entry` - Stops time tracking under a certain project task.
+- `Set associated task` - Associates a certain project task with files under a certain folder, allowing the extension to automatically switch tasks based on the files you're editing. Associates current folder by default.
+- `Remove associated task` - Allows you to remove from the saved list of associated tasks.
+- `Toggle Switching` - Turns auto-switching on or off.
 
-\!\[feature X\]\(images/feature-x.png\)
+## Installation
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Download the latest release `.vsix` file from the [repository](https://github.com/antonsivertsson/vscode-harvest-auto-switcher/releases) and install it using the following command:
+
+```bash
+code --install-extension <path/to/extension.vsix>
+```
 
 ## Requirements
 
 If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
-## Extension Settings
+## Development
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Follow the guidelines for VS Code extension development in the [VS Code Extension API documentation](https://code.visualstudio.com/api).
 
-For example:
+### Requirements
 
-This extension contributes the following settings:
+- `pnpm`
+- `vsce` to generate extension file - `npm install -g vsce`
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+### Tests
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+```bash
+# Run test suite
+pnpm test
+```
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial alpha release of extension. Includes:
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- Setup extension integration with Harvest
+- Start/Stop entries (with optional notes)
+- Experimental auto-switching support
