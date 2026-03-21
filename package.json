@@ -1,7 +1,11 @@
 {
   "name": "vscode-harvest-auto-switcher",
   "displayName": "Harvest Auto Switcher",
-  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "github:antonsivertsson/vscode-harvest-auto-switcher"
+  },
+  "description": "Manage Harvest timesheets from within Visual Studio Code, with task auto-switching capabilities based on your editing.",
   "author": {
     "name": "Anton Sivertsson",
     "email": "sivertsson.anton@gmail.com",
@@ -127,7 +131,7 @@
     "@types/vscode": "^1.83.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
-    "@vscode/test-electron": "^2.3.4",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.19.5",
     "eslint": "^8.50.0",
     "glob": "^10.3.3",

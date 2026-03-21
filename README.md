@@ -1,6 +1,10 @@
 # Harvest Auto Switcher for Visual Studio Code
 
-The Harvest Auto Switcher lets you handle your Harvest timesheets from within Visual Studio Code. It includes features to start and stop entries, update notes on entries as well as functionality to automatically switch tasks depending on which file or workspace you're editing.
+*NOTE:* Neither I, nor this extension, have any affiliation with [Harvest](https://harvestapp.com), nor do I guarantee any stable behaviour as it is still in alpha stage!
+
+The Harvest Auto Switcher lets you handle your Harvest timesheets from within Visual Studio Code. It includes features to start and stop entries, update notes on entries as well as automatically switching tasks depending on which file or workspace you're currently editing.
+
+[Documentation](https://spark-toothbrush-494.notion.site/Harvest-Time-Tracker-2fc066c098c9422bbb11fc228d08592a)
 
 ## Features
 
@@ -12,9 +16,24 @@ For example if there is an image subfolder under your extension project workspac
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
+## Installation
+
 ## Requirements
 
 If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+
+## Development
+
+### Requirements
+
+- `pnpm`
+
+### Tests
+
+```bash
+# Run test suite
+pnpm test
+```
 
 ## Extension Settings
 
@@ -24,8 +43,8 @@ For example:
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- `myExtension.enable`: Enable/disable this extension.
+- `myExtension.thing`: Set to `blah` to do something.
 
 ## Known Issues
 
@@ -53,19 +72,19 @@ Added features X, Y, and Z.
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
 
 ## Working with Markdown
 
 You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
+- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
+- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
 
 ## For more information
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
+- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
