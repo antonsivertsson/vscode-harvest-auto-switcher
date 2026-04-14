@@ -17,7 +17,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const store = new Store(context.globalState);
 	
 	let accessToken = ((context.globalState.get(storeKeys.accessToken) || context.globalState.get(storeKeys.accessToken)) as string | undefined) ?? '';
-	let accountId = ((context.globalState.get(storeKeys.accountId) || context.globalState.get(storeKeys.accessToken)) as string | undefined) ?? '';
 	let userId = ((context.globalState.get(storeKeys.userId) || context.globalState.get(storeKeys.userId)) as number | undefined) ?? -1;
 	
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
@@ -25,6 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const uiHandler = new UIHandler();
 	const harvestController = new Harvest({ accessToken, accountId, userId });
 	const tracker = new Tracker(store, statusBarItem, harvestController);
+  let accountId = ((context.globalState.get(storeKeys.accountId) || context.globalState.get(storeKeys.accountId)) as string | undefined) ?? '';
 
 	if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.fileName) {
 		// If extension starts while user is in a file editor, set it as the lastViewedFile
