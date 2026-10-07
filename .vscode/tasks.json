@@ -4,10 +4,24 @@
   "version": "2.0.0",
   "tasks": [
     {
+      // Builds out/main.js (the extension entry point) with source maps
+      "label": "esbuild-watch",
       "type": "npm",
-      "script": "watch",
-      "problemMatcher": "$tsc-watch",
+      "script": "esbuild-watch",
       "isBackground": true,
+      "problemMatcher": {
+        "owner": "esbuild",
+        "fileLocation": "relative",
+        "pattern": {
+          "regexp": "^✘ \\[ERROR\\] (.*)$",
+          "message": 1
+        },
+        "background": {
+          "activelyMatching": true,
+          "beginsPattern": "\\[watch\\] build started",
+          "endsPattern": "\\[watch\\] build finished"
+        }
+      },
       "presentation": {
         "reveal": "never"
       },
@@ -15,6 +29,18 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      // Compiles individual files into out/, used by the test runner
+      "label": "tsc-watch",
+      "type": "npm",
+      "script": "watch",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build"
     }
   ]
 }
