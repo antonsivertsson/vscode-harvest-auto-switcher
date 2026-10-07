@@ -17,7 +17,7 @@ type AvailableEntryItem = vscode.QuickPickItem & {
 
 /**
  * If no existing entry is running for selected task, create new task and start it. If previous
- * entry exists (for today), switch to that task and start running. If another task is running
+ * entry exists (for today), switch to that task and start running.
  */
 const startEntry = (harvestController: Harvest, tracker: Tracker) => async () => {
   const quickPickItems = async () => {

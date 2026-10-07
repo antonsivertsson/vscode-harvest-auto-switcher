@@ -1,15 +1,12 @@
 /**
  * Glossary:
  *
- * Associated task -> a Harvest task associated to a certain dir or file
- * Task -> Harvest task
- * Entry -> Harvest Entry
- *
+ * Associated task -> a Harvest task associated to a certain dir or file Task -> Harvest task Entry
+ * -> Harvest Entry
  */
 
 const SEC = 1000
 const MIN = 60 * SEC
-const HOUR = 60 * MIN
 
 export const storeKeys = {
   accessToken: "accessToken",
