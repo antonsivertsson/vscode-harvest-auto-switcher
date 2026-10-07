@@ -1,33 +1,33 @@
-import * as vscode from 'vscode';
-import { storeKeys } from './constants';
+import * as vscode from "vscode"
+import { storeKeys } from "./constants"
 
 export type TaskInfo = {
   task: {
     id: number
     name: string
-  },
+  }
   project: {
     id: number
     name: string
     code: string
   }
-};
+}
 
-type TaskMap = {[path: string]: TaskInfo};
+type TaskMap = { [path: string]: TaskInfo }
 
 class Store {
-  private store: vscode.Memento;
+  private store: vscode.Memento
 
   constructor(keyStore: vscode.Memento) {
-    this.store = keyStore;
+    this.store = keyStore
     if ((this.store.get(storeKeys.map) as TaskMap | undefined) === undefined) {
-      this.store.update(storeKeys.map, {});
+      this.store.update(storeKeys.map, {})
     }
   }
 
   readTaskMap() {
-    const map = this.store.get(storeKeys.map) as TaskMap;
-    return map;
+    const map = this.store.get(storeKeys.map) as TaskMap
+    return map
   }
 
   /**
@@ -37,13 +37,13 @@ class Store {
     this.store.update(storeKeys.map, {
       ...this.store.get(storeKeys.map),
       [path]: taskInfo,
-    });
+    })
   }
 
   removeAssociatedTask(path: string) {
-    let map = this.store.get(storeKeys.map) as TaskMap;
-    delete map[path];
-    this.store.update(storeKeys.map, map);
+    let map = this.store.get(storeKeys.map) as TaskMap
+    delete map[path]
+    this.store.update(storeKeys.map, map)
   }
 
   /**
@@ -52,41 +52,41 @@ class Store {
    * @returns the default Harvest task ID associated with the file or a parent folder, else undefined
    */
   getAssociatedTaskForFile(fileName: string) {
-    const taskMap = this.readTaskMap();
-    let closestMatch = '';
+    const taskMap = this.readTaskMap()
+    let closestMatch = ""
     for (let path of Object.keys(taskMap)) {
       if (path.length > closestMatch.length && fileName.includes(path)) {
-        closestMatch = path;
+        closestMatch = path
       }
     }
     if (closestMatch.length > 0) {
-      return taskMap[closestMatch];
+      return taskMap[closestMatch]
     }
-    return undefined;
+    return undefined
   }
 
   setShowSwitchStartNotification(show: boolean) {
-    this.store.update(storeKeys.showSwitchStartNotification, show);
+    this.store.update(storeKeys.showSwitchStartNotification, show)
   }
 
   getShowSwitchStartNotification() {
-    const show = this.store.get(storeKeys.switching) as boolean | undefined;
-    return show ?? false; // FIXME: Read from settings
+    const show = this.store.get(storeKeys.switching) as boolean | undefined
+    return show ?? false // FIXME: Read from settings
   }
 
   setSwitching(enabled: boolean) {
-    this.store.update(storeKeys.switching, enabled);
+    this.store.update(storeKeys.switching, enabled)
   }
 
   getSwitching() {
-    const enabled = this.store.get(storeKeys.switching) as boolean | undefined;
+    const enabled = this.store.get(storeKeys.switching) as boolean | undefined
     if (enabled === undefined) {
       // If not found, set default value
-      this.store.update(storeKeys.switching, false); // FIXME: Read default from settings
-      return false;
+      this.store.update(storeKeys.switching, false) // FIXME: Read default from settings
+      return false
     }
-    return enabled;
+    return enabled
   }
 }
 
-export default Store;
+export default Store

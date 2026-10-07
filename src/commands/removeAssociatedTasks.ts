@@ -1,22 +1,26 @@
-import * as vscode from 'vscode';
-import Store from "../store";
+import * as vscode from "vscode"
+import Store from "../store"
 
 const removeAssociatedTask = (store: Store) => async () => {
-  const taskMap = store.readTaskMap();
+  const taskMap = store.readTaskMap()
   if (Object.keys(taskMap).length === 0) {
-    await vscode.window.showInformationMessage('No tasks added. Run "Add default task" to get started.');
-    return;
+    await vscode.window.showInformationMessage(
+      'No tasks added. Run "Add default task" to get started.',
+    )
+    return
   }
-  const selected = await vscode.window.showQuickPick(Object.keys(taskMap).map((path) => {
-    const info = taskMap[path];
-    return {
-      label: `${path} - ${info.project.name}: ${info.task.name}`,
-      value: path,
-    };
-  }));
+  const selected = await vscode.window.showQuickPick(
+    Object.keys(taskMap).map((path) => {
+      const info = taskMap[path]
+      return {
+        label: `${path} - ${info.project.name}: ${info.task.name}`,
+        value: path,
+      }
+    }),
+  )
   if (selected) {
-    store.removeAssociatedTask(selected.value);
+    store.removeAssociatedTask(selected.value)
   }
-};
+}
 
-export default removeAssociatedTask;
+export default removeAssociatedTask

@@ -48,6 +48,7 @@
     "husky": "^8.0.0",
     "mocha": "^10.2.0",
     "nock": "^13.3.8",
+    "oxfmt": "^0.72.0",
     "typescript": "^5.2.2"
   },
   "contributes": {

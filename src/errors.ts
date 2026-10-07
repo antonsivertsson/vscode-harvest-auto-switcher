@@ -1,7 +1,7 @@
 class NoTokenError extends Error {
   constructor(message: string) {
-    super(message);
-    this.name = "NoTokenError";
+    super(message)
+    this.name = "NoTokenError"
   }
 }
 
@@ -9,21 +9,17 @@ class NoTokenError extends Error {
  * Returned by Harvest API when trying to pause a non-running timer
  */
 class HarvestInvalidPauseTimeError extends Error {
-    constructor(message: string) {
-    super(message);
-    this.name = "HarvestInvalidPauseTimeError";
-    }
+  constructor(message: string) {
+    super(message)
+    this.name = "HarvestInvalidPauseTimeError"
+  }
 }
 
 class HarvestLockedEntryError extends Error {
-    constructor(message: string) {
-    super(message);
-    this.name = "HarvestLockedEntryError";
-    }
+  constructor(message: string) {
+    super(message)
+    this.name = "HarvestLockedEntryError"
+  }
 }
 
-export {
-  NoTokenError,
-  HarvestInvalidPauseTimeError,
-  HarvestLockedEntryError,
-};
+export { NoTokenError, HarvestInvalidPauseTimeError, HarvestLockedEntryError }

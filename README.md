@@ -1,6 +1,6 @@
 # Harvest Auto Switcher for Visual Studio Code
 
-*NOTE:* Neither I, nor this extension, have any affiliation with [Harvest](https://harvestapp.com), nor do I guarantee any stable behaviour as it is still in alpha stage!
+_NOTE:_ Neither I, nor this extension, have any affiliation with [Harvest](https://harvestapp.com), nor do I guarantee any stable behaviour as it is still in alpha stage!
 
 The Harvest Auto Switcher lets you handle your Harvest timesheets from within Visual Studio Code. It includes features to start and stop entries, update notes on entries as well as automatically switching tasks depending on which file or workspace you're currently editing.
 
