@@ -1,28 +1,55 @@
 {
   "name": "vscode-harvest-auto-switcher",
   "displayName": "Harvest Auto Switcher",
-  "repository": {
-    "type": "git",
-    "url": "github:antonsivertsson/vscode-harvest-auto-switcher"
-  },
+  "version": "0.0.1",
   "description": "Manage Harvest timesheets from within Visual Studio Code, with task auto-switching capabilities based on your editing.",
+  "categories": [
+    "Other"
+  ],
   "author": {
     "name": "Anton Sivertsson",
     "email": "sivertsson.anton@gmail.com",
     "url": "https://github.com/antonsivertsson/"
   },
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.83.0"
+  "repository": {
+    "type": "git",
+    "url": "github:antonsivertsson/vscode-harvest-auto-switcher"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "icon": "media/extension-icon.png",
   "main": "./out/main.js",
+  "scripts": {
+    "vscode:prepublish": "pnpm run esbuild-base --minify",
+    "package": "pnpm vsce package --no-dependencies",
+    "publish": "pnpm vsce publish --no-dependencies",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "esbuild": "pnpm run esbuild-base --sourcemap",
+    "esbuild-watch": "pnpm run esbuild-base --sourcemap --watch",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.2",
+    "@types/node": "18.x",
+    "@types/node-fetch": "^2.6.7",
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "esbuild": "^0.19.5",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.3",
+    "husky": "^8.0.0",
+    "mocha": "^10.2.0",
+    "nock": "^13.3.8",
+    "typescript": "^5.2.2"
+  },
   "contributes": {
     "commands": [
       {
@@ -110,37 +137,11 @@
       }
     ]
   },
-  "scripts": {
-    "vscode:prepublish": "pnpm run esbuild-base --minify",
-    "package": "pnpm vsce package --no-dependencies",
-    "publish": "pnpm vsce publish --no-dependencies",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
-    "esbuild": "pnpm run esbuild-base --sourcemap",
-    "esbuild-watch": "pnpm run esbuild-base --sourcemap --watch",
-    "prepare": "husky install"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.2",
-    "@types/node": "18.x",
-    "@types/node-fetch": "^2.6.7",
-    "@types/vscode": "^1.83.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
-    "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.19.5",
-    "eslint": "^8.50.0",
-    "glob": "^10.3.3",
-    "mocha": "^10.2.0",
-    "nock": "^13.3.8",
-    "typescript": "^5.2.2",
-    "husky": "^8.0.0"
-  },
-  "dependencies": {
-    "node-fetch": "^2.7.0"
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "icon": "media/extension-icon.png",
+  "engines": {
+    "vscode": "^1.83.0"
   }
 }
