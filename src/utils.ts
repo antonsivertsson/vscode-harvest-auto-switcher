@@ -1,4 +1,4 @@
-import { HarvestResponse } from "./harvest"
+import { HarvestResponse } from "./handlers/harvest"
 
 export const harvestProjectsToProjectInfo = (projects: HarvestResponse.ProjectAssignments) =>
   projects.project_assignments.map((projectAssignment) => ({

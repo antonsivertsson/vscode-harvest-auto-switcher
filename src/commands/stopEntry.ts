@@ -1,9 +1,10 @@
-import Harvest from "../harvest"
+import Harvest from "../handlers/harvest"
 import Tracker from "../tracker"
 
 /**
- * Pauses whatever entry is active in harvest right now
- * Triggers update to UI if active entry is different from the tracker
+ * Pauses whatever entry is active in harvest right now Triggers update to UI if active entry is
+ * different from the tracker
+ *
  * @param harvestController
  * @returns
  */

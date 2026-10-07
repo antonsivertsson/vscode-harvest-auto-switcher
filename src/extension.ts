@@ -1,9 +1,8 @@
 import * as vscode from "vscode"
 import { storeKeys } from "./constants"
-import UIHandler from "./ui"
 import Tracker from "./tracker"
-import Store from "./store"
-import Harvest from "./harvest"
+import AssociatedTaskManager from "./handlers/associatedTaskManager"
+import Harvest from "./handlers/harvest"
 import { NoTokenError } from "./errors"
 import changeTask from "./commands/startEntry"
 import setAssociatedTask from "./commands/setAssociatedTask"
@@ -14,8 +13,10 @@ import toggleSwitching from "./commands/toggleSwitching"
 let statusBarItem: vscode.StatusBarItem
 
 export function activate(context: vscode.ExtensionContext) {
-  const store = new Store(context.globalState)
+  // Initialize the associatedTaskManager using the VSCode extension state object
+  const associatedTaskManager = new AssociatedTaskManager(context.globalState)
 
+  /** Retrieve saved data from state */
   let accessToken =
     ((context.globalState.get(storeKeys.accessToken) ||
       context.globalState.get(storeKeys.accessToken)) as string | undefined) ?? ""
@@ -29,9 +30,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1)
 
-  const uiHandler = new UIHandler()
   const harvestController = new Harvest({ accessToken, accountId, userId })
-  const tracker = new Tracker(store, statusBarItem, harvestController)
+  const tracker = new Tracker(associatedTaskManager, statusBarItem, harvestController)
 
   if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.fileName) {
     // If extension starts while user is in a file editor, set it as the lastViewedFile
@@ -79,8 +79,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vscode-harvest-auto-switcher.setHarvestToken", async () => {
-      const harvestToken = await uiHandler.getHarvestToken()
+      const harvestToken = await Harvest.getHarvestToken()
       if (!harvestToken) {
+        // FIXME: This should probably not return here... Handle gracefully with NoTokenError
         return
       }
       try {
@@ -111,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.setAssociatedTask",
-      setAssociatedTask(harvestController, store, tracker),
+      setAssociatedTask(harvestController, associatedTaskManager, tracker),
     ),
   )
   context.subscriptions.push(
@@ -123,13 +124,13 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.removeAssociatedTask",
-      removeAssociatedTask(store),
+      removeAssociatedTask(associatedTaskManager),
     ),
   )
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.toggleSwitching",
-      toggleSwitching(store, tracker),
+      toggleSwitching(associatedTaskManager, tracker),
     ),
   )
 

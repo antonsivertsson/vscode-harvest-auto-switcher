@@ -1,8 +1,9 @@
 // Class for managing harvest interactions
 import fetch, { RequestInit } from "node-fetch"
-import { NoTokenError } from "./errors"
-import { harvestProjectsToProjectInfo } from "./utils"
-import { constants } from "./constants"
+import * as vscode from "vscode"
+import { NoTokenError } from "../errors"
+import { harvestProjectsToProjectInfo } from "../utils"
+import { constants } from "../constants"
 
 interface HarvestOptions {
   accessToken: string
@@ -122,9 +123,25 @@ class Harvest {
     }
   }
 
-  /**
-   * Initializing function to fetch data from harvest
-   */
+  static async getHarvestToken() {
+    const accessToken = await vscode.window.showInputBox({
+      placeHolder: "Access Token from Harvest",
+      ignoreFocusOut: true,
+    })
+    if (accessToken === undefined) {
+      return
+    }
+    const accountId = await vscode.window.showInputBox({
+      placeHolder: "Account/Organization ID from Harvest",
+      ignoreFocusOut: true,
+    })
+    if (accountId === undefined) {
+      return
+    }
+    return { accessToken, accountId }
+  }
+
+  /** Initializing function to fetch data from harvest */
   async init() {
     if (this.accessToken && this.accountId && this.userId > -1) {
       const [activeTimeEntry] = await Promise.all([
@@ -144,11 +161,12 @@ class Harvest {
 
   public create = {
     /**
-     * Creates a new time entry against project and task
-     * Will automatically start this and stop any previously running entries
+     * Creates a new time entry against project and task Will automatically start this and stop any
+     * previously running entries
+     *
      * @param projectId
      * @param taskId
-     * @returns a promise with the id for the new entry
+     * @returns A promise with the id for the new entry
      */
     newEntry: async (projectId: number, taskId: number, notes?: string) => {
       const action = "newEntry"
@@ -183,6 +201,7 @@ class Harvest {
   public update = {
     /**
      * Resumes a pre-existing time entry for the id if not already running
+     *
      * @param entryId
      */
     startEntry: async (entryId: number) => {
@@ -206,6 +225,7 @@ class Harvest {
     },
     /**
      * Stops a pre-existing time entry if it's running
+     *
      * @param entryId
      */
     stopEntry: async (entryId: number) => {
@@ -225,9 +245,7 @@ class Harvest {
       this.runningMutations.delete(mutationKey)
     },
 
-    /**
-     * Updates the notes attached to a time entry
-     */
+    /** Updates the notes attached to a time entry */
     notes: async (entryId: number, updatedNotes: string) => {
       const action = "updateNotes"
       const mutationKey = `${action}_${entryId}_${updatedNotes}`
@@ -257,6 +275,7 @@ class Harvest {
   public get = {
     /**
      * Retrieves user information for authenticated user
+     *
      * @returns Harvest user data
      */
     user: async () => {
@@ -270,6 +289,7 @@ class Harvest {
 
     /**
      * Retrieves all time entries for this date
+     *
      * @returns Today's entries
      */
     timeEntries: async () => {
@@ -286,9 +306,7 @@ class Harvest {
       }
     },
 
-    /**
-     * Returns the active time entry if there is one
-     */
+    /** Returns the active time entry if there is one */
     activeTimeEntry: async () => {
       try {
         const response = await this.fetch(`/time_entries?is_running=true&user_id=${this.userId}`)
@@ -306,6 +324,7 @@ class Harvest {
 
     /**
      * Retrieves project assignments for authenticated user.
+     *
      * @returns Project assignment object
      */
     projectAssignments: async () => {
@@ -316,9 +335,10 @@ class Harvest {
   }
 
   /**
-   * Updates Harvest credentials.
-   * Reverts to previous values if it fails to retrieve information from Harvest.
-   * @param accessToken generated access token from https://id.getharvest.com/developers
+   * Updates Harvest credentials. Reverts to previous values if it fails to retrieve information
+   * from Harvest.
+   *
+   * @param accessToken Generated access token from https://id.getharvest.com/developers
    * @param accountId Harvest account ID retrieved from https://id.getharvest.com/developers
    * @returns
    */

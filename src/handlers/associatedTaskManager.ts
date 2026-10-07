@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { storeKeys } from "./constants"
+import { storeKeys } from "../constants"
 
 export type TaskInfo = {
   task: {
@@ -15,7 +15,11 @@ export type TaskInfo = {
 
 type TaskMap = { [path: string]: TaskInfo }
 
-class Store {
+/**
+ * The AssociatedTaskManager is responsible for keeping track of which files and directories map to
+ * a certain Project and Task in Harvest.
+ */
+class AssociatedTaskManager {
   private store: vscode.Memento
 
   constructor(keyStore: vscode.Memento) {
@@ -25,14 +29,13 @@ class Store {
     }
   }
 
+  /** Returns the currently stored map of associated tasks */
   readTaskMap() {
     const map = this.store.get(storeKeys.map) as TaskMap
     return map
   }
 
-  /**
-   * Adds a default task to the map. Will overwrite if already existing path
-   */
+  /** Adds a default task to the map. Will overwrite if already existing path */
   addDefaultTask(path: string, taskInfo: TaskInfo) {
     this.store.update(storeKeys.map, {
       ...this.store.get(storeKeys.map),
@@ -40,6 +43,10 @@ class Store {
     })
   }
 
+  /**
+   * Takes a file path and removes whatever task was associated for that path. Note that it will not
+   * remove any associated tasks for its children or beyond.
+   */
   removeAssociatedTask(path: string) {
     let map = this.store.get(storeKeys.map) as TaskMap
     delete map[path]
@@ -48,8 +55,10 @@ class Store {
 
   /**
    * Given a filename, return the matching default task if any is found
+   *
    * @param fileName
-   * @returns the default Harvest task ID associated with the file or a parent folder, else undefined
+   * @returns The default Harvest task ID associated with the file or a parent folder, else
+   *   undefined
    */
   getAssociatedTaskForFile(fileName: string) {
     const taskMap = this.readTaskMap()
@@ -62,6 +71,7 @@ class Store {
     if (closestMatch.length > 0) {
       return taskMap[closestMatch]
     }
+    // FIXME: Avoid using undefined
     return undefined
   }
 
@@ -89,4 +99,4 @@ class Store {
   }
 }
 
-export default Store
+export default AssociatedTaskManager

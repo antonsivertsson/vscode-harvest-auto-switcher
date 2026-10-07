@@ -1,6 +1,6 @@
 import * as assert from "assert"
 import * as nock from "nock"
-import Harvest from "../../harvest"
+import Harvest from "../../handlers/harvest"
 
 const apiEndpoint = "https://api.harvestapp.com/api/v2"
 

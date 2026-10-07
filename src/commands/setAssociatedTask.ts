@@ -1,14 +1,15 @@
 import * as vscode from "vscode"
 import * as path from "path"
 
-import Harvest from "../harvest"
-import Store, { TaskInfo } from "../store"
+import Harvest from "../handlers/harvest"
+import AssociatedTaskManager, { TaskInfo } from "../handlers/associatedTaskManager"
 import Tracker from "../tracker"
 
 type DefaultTaskQuickPickItem = vscode.QuickPickItem & { value: TaskInfo }
 
 const setAssociatedTask =
-  (harvestController: Harvest, store: Store, tracker: Tracker) => async () => {
+  (harvestController: Harvest, associatedTaskManager: AssociatedTaskManager, tracker: Tracker) =>
+  async () => {
     if (harvestController.projectTasks.length === 0) {
       await harvestController.refreshProjectTasks()
     }
@@ -51,7 +52,7 @@ const setAssociatedTask =
       // Don't save if user cancels
       return
     }
-    store.addDefaultTask(pathName, selected.value)
+    associatedTaskManager.addDefaultTask(pathName, selected.value)
   }
 
 export default setAssociatedTask

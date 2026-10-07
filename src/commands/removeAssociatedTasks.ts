@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
-import Store from "../store"
+import AssociatedTaskManager from "../handlers/associatedTaskManager"
 
-const removeAssociatedTask = (store: Store) => async () => {
-  const taskMap = store.readTaskMap()
+const removeAssociatedTask = (associatedTaskManager: AssociatedTaskManager) => async () => {
+  const taskMap = associatedTaskManager.readTaskMap()
   if (Object.keys(taskMap).length === 0) {
     await vscode.window.showInformationMessage(
       'No tasks added. Run "Add default task" to get started.',
@@ -19,7 +19,7 @@ const removeAssociatedTask = (store: Store) => async () => {
     }),
   )
   if (selected) {
-    store.removeAssociatedTask(selected.value)
+    associatedTaskManager.removeAssociatedTask(selected.value)
   }
 }
 

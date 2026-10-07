@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import Harvest, { HarvestResponse } from "../harvest"
+import Harvest, { HarvestResponse } from "../handlers/harvest"
 import Tracker from "../tracker"
 
 type ProjectTaskItem = vscode.QuickPickItem & { value: { taskId: number; projectId: number } }
@@ -16,9 +16,8 @@ type AvailableEntryItem = vscode.QuickPickItem & {
 // QUESTION: How/Where do we show the total time tracked today? -> Show in tooltip for status bar
 
 /**
- * If no existing entry is running for selected task, create new task and start it.
- * If previous entry exists (for today), switch to that task and start running.
- * If another task is running
+ * If no existing entry is running for selected task, create new task and start it. If previous
+ * entry exists (for today), switch to that task and start running. If another task is running
  */
 const startEntry = (harvestController: Harvest, tracker: Tracker) => async () => {
   const quickPickItems = async () => {
