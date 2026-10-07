@@ -25,6 +25,7 @@ class AssociatedTaskManager {
   constructor(keyStore: vscode.Memento) {
     this.store = keyStore
     if ((this.store.get(storeKeys.map) as TaskMap | undefined) === undefined) {
+      // If we don't have a map already, initialize empty object
       this.store.update(storeKeys.map, {})
     }
   }

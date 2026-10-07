@@ -12,25 +12,18 @@ import toggleSwitching from "./commands/toggleSwitching"
 
 let statusBarItem: vscode.StatusBarItem
 
-export function activate(context: vscode.ExtensionContext) {
-  // Initialize the associatedTaskManager using the VSCode extension state object
-  const associatedTaskManager = new AssociatedTaskManager(context.globalState)
+export async function activate(context: vscode.ExtensionContext) {
+  // Retrieve saved data from state
+  let accessToken = ((await context.secrets.get(storeKeys.accessToken)) as string | undefined) ?? ""
+  let accountId = (context.globalState.get(storeKeys.accountId) as string | undefined) ?? ""
+  let userId = (context.globalState.get(storeKeys.userId) as number | undefined) ?? -1
 
-  /** Retrieve saved data from state */
-  let accessToken =
-    ((context.globalState.get(storeKeys.accessToken) ||
-      context.globalState.get(storeKeys.accessToken)) as string | undefined) ?? ""
-  let accountId =
-    ((context.globalState.get(storeKeys.accountId) ||
-      context.globalState.get(storeKeys.accountId)) as string | undefined) ?? ""
-  let userId =
-    ((context.globalState.get(storeKeys.userId) || context.globalState.get(storeKeys.userId)) as
-      | number
-      | undefined) ?? -1
-
+  // Init status bar items
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1)
 
+  // Init handlers
   const harvestController = new Harvest({ accessToken, accountId, userId })
+  const associatedTaskManager = new AssociatedTaskManager(context.globalState)
   const tracker = new Tracker(associatedTaskManager, statusBarItem, harvestController)
 
   if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.fileName) {
@@ -38,11 +31,13 @@ export function activate(context: vscode.ExtensionContext) {
     tracker.lastViewedFile = vscode.window.activeTextEditor.document.fileName
   }
 
+  // If no harvest credentials set, taskbar does "setup" command
   if (accessToken === "" || accountId === "" || userId === -1) {
     statusBarItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground")
     statusBarItem.text = `$(harvest-auto-timer-running) setup`
     statusBarItem.command = "vscode-harvest-auto-switcher.setHarvestToken"
   } else {
+    // If  valid, toggles switching functionality
     statusBarItem.command = "vscode-harvest-auto-switcher.toggleSwitching"
     tracker.updateStatusBar()
   }
@@ -89,7 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
           harvestToken.accessToken,
           harvestToken.accountId,
         )
-        context.globalState.update(storeKeys.accessToken, harvestToken.accessToken)
+        context.secrets.store(storeKeys.accessToken, harvestToken.accessToken)
         context.globalState.update(storeKeys.accountId, harvestToken.accountId)
         context.globalState.update(storeKeys.userId, res.userId)
         statusBarItem.command = "vscode-harvest-auto-switcher.toggleSwitching"
