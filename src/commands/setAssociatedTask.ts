@@ -3,7 +3,7 @@ import * as path from "path"
 
 import Harvest from "../handlers/harvest"
 import AssociatedTaskManager, { TaskInfo } from "../handlers/associatedTaskManager"
-import Tracker from "../tracker"
+import Tracker from "../handlers/tracker"
 
 type DefaultTaskQuickPickItem = vscode.QuickPickItem & { value: TaskInfo }
 

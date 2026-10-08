@@ -1,5 +1,5 @@
 import AssociatedTaskManager from "../handlers/associatedTaskManager"
-import Tracker from "../tracker"
+import Tracker from "../handlers/tracker"
 
 const toggleSwitching =
   (associatedTaskManager: AssociatedTaskManager, tracker: Tracker) => async () => {

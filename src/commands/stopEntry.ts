@@ -1,5 +1,5 @@
 import Harvest from "../handlers/harvest"
-import Tracker from "../tracker"
+import Tracker from "../handlers/tracker"
 
 /**
  * Pauses whatever entry is active in harvest right now Triggers update to UI if active entry is

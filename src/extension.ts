@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 import { storeKeys } from "./constants"
-import Tracker from "./tracker"
+import Tracker from "./handlers/tracker"
 import AssociatedTaskManager from "./handlers/associatedTaskManager"
 import Harvest from "./handlers/harvest"
 import { NoTokenError } from "./errors"

@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
-import { formatHours, minsToHourFloat } from "./utils"
-import AssociatedTaskManager from "./handlers/associatedTaskManager"
-import { constants } from "./constants"
-import Harvest from "./handlers/harvest"
+import { formatHours, minsToHourFloat } from "../utils"
+import AssociatedTaskManager from "./associatedTaskManager"
+import { constants } from "../constants"
+import Harvest from "./harvest"
 
 /** Keeps track of changes in vscode to determine when to trigger Harvest updates */
 class Tracker {

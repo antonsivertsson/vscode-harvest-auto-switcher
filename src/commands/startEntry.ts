@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import Harvest, { HarvestResponse } from "../handlers/harvest"
-import Tracker from "../tracker"
+import Tracker from "../handlers/tracker"
 import AssociatedTaskManager from "../handlers/associatedTaskManager"
 import { formatHours } from "../utils"
 
