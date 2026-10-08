@@ -123,6 +123,7 @@ class Harvest {
     }
   }
 
+  /** Opens a VSCode input to accept Harvest AccessToken and AccountId, returning it to caller. */
   static async getHarvestToken() {
     const accessToken = await vscode.window.showInputBox({
       placeHolder: "Access Token from Harvest",
@@ -336,7 +337,7 @@ class Harvest {
 
   /**
    * Updates Harvest credentials. Reverts to previous values if it fails to retrieve information
-   * from Harvest.
+   * from Harvest. Returns token, account ID and the user ID for user if successful.
    *
    * @param accessToken Generated access token from https://id.getharvest.com/developers
    * @param accountId Harvest account ID retrieved from https://id.getharvest.com/developers

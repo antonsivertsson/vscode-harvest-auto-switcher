@@ -2,6 +2,8 @@ import * as vscode from "vscode"
 
 import Harvest, { HarvestResponse } from "../handlers/harvest"
 import Tracker from "../tracker"
+import AssociatedTaskManager from "../handlers/associatedTaskManager"
+import { formatHours } from "../utils"
 
 type ProjectTaskItem = vscode.QuickPickItem & { value: { taskId: number; projectId: number } }
 type AvailableEntryItem = vscode.QuickPickItem & {
@@ -19,136 +21,138 @@ type AvailableEntryItem = vscode.QuickPickItem & {
  * If no existing entry is running for selected task, create new task and start it. If previous
  * entry exists (for today), switch to that task and start running.
  */
-const startEntry = (harvestController: Harvest, tracker: Tracker) => async () => {
-  const quickPickItems = async () => {
-    // FIXME: Change to get todays timers? Only problem if timer was started yesterday...
-    const todaysEntries = await harvestController.get.timeEntries()
-    const availableEntries: AvailableEntryItem[] = todaysEntries.time_entries.map((entry) => ({
-      label: `${entry.project.code !== "" ? entry.project.code : entry.project.name} - ${entry.task.name}`,
-      description: `${entry.is_running ? `$(loading~spin)` : ``} ${Tracker.hoursToText(entry.hours)}`,
-      detail: entry.notes,
-      value: entry.id,
-      entry,
-    }))
-
-    // Sort to get the active timer at the top (if it exists) or the previously active entry (if there is one).
-    // Keep the rest of the results unsorted
-    availableEntries.sort((a, b) =>
-      a.entry?.is_running ? -2 : tracker.lastActiveEntry.entryId === a.entry?.id ? -1 : 0,
-    )
-    // Last item in quickPickItems reserved for creating a new entry
-    availableEntries.push({
-      label: `$(plus) New entry`,
-      detail: "Add new entry",
-      value: -1,
-    })
-    return availableEntries
-  }
-
-  const selected = await vscode.window.showQuickPick(quickPickItems(), {
-    title: `Select entry to switch to`,
-  })
-  if (!selected) {
-    return
-  }
-
-  if (selected.entry?.is_running) {
-    // FIXME: Notes may erase newline if present in text added from external harvest app
-    const newNotes = await vscode.window.showInputBox({
-      value: selected.entry.notes,
-      placeHolder: "Add Notes...",
-    })
-    if (newNotes === selected.entry.notes || newNotes === undefined) {
-      // FIXME: potential bug? If we don't update the notes we won't update the tracker
-      return
-    }
-    await harvestController.update.notes(selected.entry.id, newNotes)
-    tracker.activeTimer = true
-    tracker.lastActiveEntry = {
-      projectCode: selected.entry.project.code,
-      projectName: selected.entry.project.name,
-      taskName: selected.entry.task.name,
-      hours: selected.entry.hours,
-      taskId: selected.entry.task.id,
-      entryId: selected.entry.id,
-    }
-    tracker.startTracking()
-    tracker.updateStatusBar()
-  } else if (selected.value === -1) {
-    // If adding a new entry, show list of possible entries, then allow us to add notes
-    const tasks = harvestController.projectTasks.reduce((result, project) => {
-      const tasksWithProjectName = project.tasks.map((task) => ({
-        label: `${project.code !== "" ? project.code : project.name} - ${task.name}`,
-        description: project.code !== "" ? `$(project) ${project.name}` : undefined,
-        value: {
-          taskId: task.id,
-          projectId: project.id,
-        },
+const startEntry =
+  (harvestController: Harvest, tracker: Tracker, associatedTaskManager: AssociatedTaskManager) =>
+  async () => {
+    const quickPickItems = async () => {
+      // FIXME: Change to get todays timers? Only problem if timer was started yesterday...
+      const todaysEntries = await harvestController.get.timeEntries()
+      const availableEntries: AvailableEntryItem[] = todaysEntries.time_entries.map((entry) => ({
+        label: `${entry.project.code !== "" ? entry.project.code : entry.project.name} - ${entry.task.name}`,
+        description: `${entry.is_running ? `$(loading~spin)` : ``} ${formatHours(entry.hours)}`,
+        detail: entry.notes,
+        value: entry.id,
+        entry,
       }))
-      return [...result, ...tasksWithProjectName]
-    }, [] as ProjectTaskItem[])
 
-    const selectedTask = await vscode.window.showQuickPick(tasks)
-    if (!selectedTask) {
-      return
+      // Sort to get the active timer at the top (if it exists) or the previously active entry (if there is one).
+      // Keep the rest of the results unsorted
+      availableEntries.sort((a, b) =>
+        a.entry?.is_running ? -2 : tracker.lastActiveEntry.entryId === a.entry?.id ? -1 : 0,
+      )
+      // Last item in quickPickItems reserved for creating a new entry
+      availableEntries.push({
+        label: `$(plus) New entry`,
+        detail: "Add new entry",
+        value: -1,
+      })
+      return availableEntries
     }
-    const newNotes = await vscode.window.showInputBox({ placeHolder: "Add Notes..." })
-    const newEntry = await harvestController.create.newEntry(
-      selectedTask.value.projectId,
-      selectedTask.value.taskId,
-      newNotes,
-    )
-    if (!newEntry) {
-      return
-    }
-    tracker.activeTimer = true
-    tracker.lastActiveEntry = {
-      projectCode: newEntry.project.code,
-      projectName: newEntry.project.name,
-      taskName: newEntry.task.name,
-      hours: newEntry.hours,
-      taskId: newEntry.task.id,
-      entryId: newEntry.id,
-    }
-    // Disable switching if we changed task while in file that has a different associated task
-    const associatedTask = tracker.getAssociatedTask(tracker.lastViewedFile)
-    if (associatedTask && associatedTask.task.id !== newEntry.task.id) {
-      tracker.disableSwitching()
-    }
-    tracker.startTracking()
-    tracker.updateStatusBar()
-  } else {
-    // FIXME: Needs to handle the case when we have no selection?
-    const newNotes = await vscode.window.showInputBox({
-      value: selected.entry!.notes,
-      placeHolder: "Add Notes...",
+
+    const selected = await vscode.window.showQuickPick(quickPickItems(), {
+      title: `Select entry to switch to`,
     })
-    if (newNotes === undefined) {
-      // Abort if user cancels
+    if (!selected) {
       return
     }
-    let promises = [harvestController.update.startEntry(selected.value)]
-    if (newNotes !== selected.entry!.notes) {
-      promises.push(harvestController.update.notes(selected.value, newNotes))
+
+    if (selected.entry?.is_running) {
+      // FIXME: Notes may erase newline if present in text added from external harvest app
+      const newNotes = await vscode.window.showInputBox({
+        value: selected.entry.notes,
+        placeHolder: "Add Notes...",
+      })
+      if (newNotes === selected.entry.notes || newNotes === undefined) {
+        // FIXME: potential bug? If we don't update the notes we won't update the tracker
+        return
+      }
+      await harvestController.update.notes(selected.entry.id, newNotes)
+      tracker.activeTimer = true
+      tracker.lastActiveEntry = {
+        projectCode: selected.entry.project.code,
+        projectName: selected.entry.project.name,
+        taskName: selected.entry.task.name,
+        hours: selected.entry.hours,
+        taskId: selected.entry.task.id,
+        entryId: selected.entry.id,
+      }
+      tracker.startTracking()
+      tracker.updateStatusBar()
+    } else if (selected.value === -1) {
+      // If adding a new entry, show list of possible entries, then allow us to add notes
+      const tasks = harvestController.projectTasks.reduce((result, project) => {
+        const tasksWithProjectName = project.tasks.map((task) => ({
+          label: `${project.code !== "" ? project.code : project.name} - ${task.name}`,
+          description: project.code !== "" ? `$(project) ${project.name}` : undefined,
+          value: {
+            taskId: task.id,
+            projectId: project.id,
+          },
+        }))
+        return [...result, ...tasksWithProjectName]
+      }, [] as ProjectTaskItem[])
+
+      const selectedTask = await vscode.window.showQuickPick(tasks)
+      if (!selectedTask) {
+        return
+      }
+      const newNotes = await vscode.window.showInputBox({ placeHolder: "Add Notes..." })
+      const newEntry = await harvestController.create.newEntry(
+        selectedTask.value.projectId,
+        selectedTask.value.taskId,
+        newNotes,
+      )
+      if (!newEntry) {
+        return
+      }
+      tracker.activeTimer = true
+      tracker.lastActiveEntry = {
+        projectCode: newEntry.project.code,
+        projectName: newEntry.project.name,
+        taskName: newEntry.task.name,
+        hours: newEntry.hours,
+        taskId: newEntry.task.id,
+        entryId: newEntry.id,
+      }
+      // Disable switching if we changed task while in file that has a different associated task
+      const associatedTask = associatedTaskManager.getAssociatedTaskForFile(tracker.lastViewedFile)
+      if (associatedTask && associatedTask.task.id !== newEntry.task.id) {
+        tracker.disableSwitching()
+      }
+      tracker.startTracking()
+      tracker.updateStatusBar()
+    } else {
+      // FIXME: Needs to handle the case when we have no selection?
+      const newNotes = await vscode.window.showInputBox({
+        value: selected.entry!.notes,
+        placeHolder: "Add Notes...",
+      })
+      if (newNotes === undefined) {
+        // Abort if user cancels
+        return
+      }
+      let promises = [harvestController.update.startEntry(selected.value)]
+      if (newNotes !== selected.entry!.notes) {
+        promises.push(harvestController.update.notes(selected.value, newNotes))
+      }
+      await Promise.all(promises)
+      tracker.activeTimer = true
+      tracker.lastActiveEntry = {
+        projectCode: selected.entry!.project.code,
+        projectName: selected.entry!.project.name,
+        taskName: selected.entry!.task.name,
+        hours: selected.entry!.hours,
+        taskId: selected.entry!.task.id,
+        entryId: selected.entry!.id,
+      }
+      // Disable switching if we changed task while in file that has a different associated task
+      const associatedTask = associatedTaskManager.getAssociatedTaskForFile(tracker.lastViewedFile)
+      if (associatedTask && associatedTask.task.id !== selected.entry!.task.id) {
+        tracker.disableSwitching()
+      }
+      tracker.startTracking()
+      tracker.updateStatusBar()
     }
-    await Promise.all(promises)
-    tracker.activeTimer = true
-    tracker.lastActiveEntry = {
-      projectCode: selected.entry!.project.code,
-      projectName: selected.entry!.project.name,
-      taskName: selected.entry!.task.name,
-      hours: selected.entry!.hours,
-      taskId: selected.entry!.task.id,
-      entryId: selected.entry!.id,
-    }
-    // Disable switching if we changed task while in file that has a different associated task
-    const associatedTask = tracker.getAssociatedTask(tracker.lastViewedFile)
-    if (associatedTask && associatedTask.task.id !== selected.entry!.task.id) {
-      tracker.disableSwitching()
-    }
-    tracker.startTracking()
-    tracker.updateStatusBar()
   }
-}
 
 export default startEntry

@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-
+import { formatHours, minsToHourFloat } from "./utils"
 import AssociatedTaskManager from "./handlers/associatedTaskManager"
 import { constants } from "./constants"
 import Harvest from "./handlers/harvest"
@@ -62,37 +62,6 @@ class Tracker {
     }, constants.CHECK_TRACKING_STATUS_INTERVAL_MS)
   }
 
-  /**
-   * Converts float of hours into text of format hh:mm
-   *
-   * @param hours
-   */
-  public static hoursToText(hours: number) {
-    const h = Math.floor(hours)
-    let min = Math.round((hours - h) * 60).toString()
-    return `${h < 10 ? `0${h}` : h}:${min.length < 2 ? `0${min}` : min}`
-  }
-
-  /**
-   * Takes a number of minutes and converts it into a float where 1 = 1 hour. E.g. 15 mins = 0.25
-   * hours.
-   *
-   * @param mins
-   */
-  public static minsToHourFloat(mins: number) {
-    return mins / 60
-  }
-
-  /**
-   * Returns the associated task for a file if available
-   *
-   * @param fileName
-   * @returns
-   */
-  public getAssociatedTask(fileName: string) {
-    return this.associatedTaskManager.getAssociatedTaskForFile(fileName)
-  }
-
   /** Updates the status bar given the status of time tracking */
   public updateStatusBar() {
     // FIXME: If currently tracking an entry and the project code or name
@@ -120,7 +89,7 @@ class Tracker {
       }
       tooltipText += `${this.lastActiveEntry.projectName}
       ${this.lastActiveEntry.taskName}`
-      statusBarText += ` ${Tracker.hoursToText(this.lastActiveEntry.hours)}`
+      statusBarText += ` ${formatHours(this.lastActiveEntry.hours)}`
       this.statusBar.command = "vscode-harvest-auto-switcher.toggleSwitching"
     }
 
@@ -145,7 +114,7 @@ class Tracker {
   public startTracking() {
     if (this.updateTrackingStateInterval === null) {
       this.updateTrackingStateInterval = setInterval(() => {
-        this.lastActiveEntry.hours += Tracker.minsToHourFloat(1)
+        this.lastActiveEntry.hours += minsToHourFloat(1)
         this.updateStatusBar()
       }, constants.TRACKING_INTERVAL_MS)
     }

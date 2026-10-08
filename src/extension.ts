@@ -26,6 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const associatedTaskManager = new AssociatedTaskManager(context.globalState)
   const tracker = new Tracker(associatedTaskManager, statusBarItem, harvestController)
 
+  // TODO: Move to tracker init function
   if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.fileName) {
     // If extension starts while user is in a file editor, set it as the lastViewedFile
     tracker.lastViewedFile = vscode.window.activeTextEditor.document.fileName
@@ -76,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("vscode-harvest-auto-switcher.setHarvestToken", async () => {
       const harvestToken = await Harvest.getHarvestToken()
       if (!harvestToken) {
-        // FIXME: This should probably not return here... Handle gracefully with NoTokenError
+        // FIXME: This should probably not return here... Handle gracefully with NoTokenError?
         return
       }
       try {
@@ -84,9 +85,11 @@ export async function activate(context: vscode.ExtensionContext) {
           harvestToken.accessToken,
           harvestToken.accountId,
         )
+        // Store relevant information
         context.secrets.store(storeKeys.accessToken, harvestToken.accessToken)
         context.globalState.update(storeKeys.accountId, harvestToken.accountId)
         context.globalState.update(storeKeys.userId, res.userId)
+        // Update status bar to reflect setup or refresh credentials has finished
         statusBarItem.command = "vscode-harvest-auto-switcher.toggleSwitching"
         tracker.updateStatusBar()
       } catch (err) {
@@ -101,51 +104,33 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.startEntry",
-      changeTask(harvestController, tracker),
+      changeTask(harvestController, tracker, associatedTaskManager),
     ),
-  )
-  context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.setAssociatedTask",
       setAssociatedTask(harvestController, associatedTaskManager, tracker),
     ),
-  )
-  context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.pause",
       pauseEntry(harvestController, tracker),
     ),
-  )
-  context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.removeAssociatedTask",
       removeAssociatedTask(associatedTaskManager),
     ),
-  )
-  context.subscriptions.push(
     vscode.commands.registerCommand(
       "vscode-harvest-auto-switcher.toggleSwitching",
       toggleSwitching(associatedTaskManager, tracker),
     ),
-  )
-
-  context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor((e) => {
       tracker.activeEditorChanged(e)
     }),
-  )
-
-  // Triggered only on save
-  context.subscriptions.push(
+    // Triggered only on save
     vscode.workspace.onDidSaveTextDocument((e) => tracker.onTextDocumentSave(e)),
-  )
-
-  // Triggered on any change
-  context.subscriptions.push(
+    // Triggered on any change
     vscode.workspace.onDidChangeTextDocument((e) => tracker.onTextDocumentChange(e)),
+    statusBarItem,
   )
-
-  context.subscriptions.push(statusBarItem)
   statusBarItem.show()
 }
 
