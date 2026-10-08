@@ -88,6 +88,7 @@ interface Task {
   name: string
 }
 
+/** Controller that handles the interfacing with Harvest via their v2 API. */
 class Harvest {
   private accessToken: string
   private accountId: string
@@ -163,11 +164,7 @@ class Harvest {
   public create = {
     /**
      * Creates a new time entry against project and task Will automatically start this and stop any
-     * previously running entries
-     *
-     * @param projectId
-     * @param taskId
-     * @returns A promise with the id for the new entry
+     * previously running entries.
      */
     newEntry: async (projectId: number, taskId: number, notes?: string) => {
       const action = "newEntry"
@@ -200,11 +197,7 @@ class Harvest {
   }
 
   public update = {
-    /**
-     * Resumes a pre-existing time entry for the id if not already running
-     *
-     * @param entryId
-     */
+    /** Resumes a pre-existing time entry for the id if not already running. */
     startEntry: async (entryId: number) => {
       const action = "startEntry"
       const mutationKey = `${action}_${entryId}`
@@ -224,11 +217,7 @@ class Harvest {
       }
       this.runningMutations.delete(mutationKey)
     },
-    /**
-     * Stops a pre-existing time entry if it's running
-     *
-     * @param entryId
-     */
+    /** Stops a pre-existing time entry if it's running. */
     stopEntry: async (entryId: number) => {
       const action = "stopEntry"
       const mutationKey = `${action}_${entryId}`
@@ -246,7 +235,7 @@ class Harvest {
       this.runningMutations.delete(mutationKey)
     },
 
-    /** Updates the notes attached to a time entry */
+    /** Updates the notes attached to a time entry. */
     notes: async (entryId: number, updatedNotes: string) => {
       const action = "updateNotes"
       const mutationKey = `${action}_${entryId}_${updatedNotes}`
@@ -274,11 +263,7 @@ class Harvest {
   }
 
   public get = {
-    /**
-     * Retrieves user information for authenticated user
-     *
-     * @returns Harvest user data
-     */
+    /** Retrieves user information for authenticated user */
     user: async () => {
       const response = await this.fetch("/users/me")
       if (!response.ok) {
@@ -288,11 +273,7 @@ class Harvest {
       return data
     },
 
-    /**
-     * Retrieves all time entries for this date
-     *
-     * @returns Today's entries
-     */
+    /** Retrieves all time entries for this date */
     timeEntries: async () => {
       try {
         const todayISO = new Date().toISOString().split("T")[0]
@@ -323,11 +304,7 @@ class Harvest {
       }
     },
 
-    /**
-     * Retrieves project assignments for authenticated user.
-     *
-     * @returns Project assignment object
-     */
+    /** Retrieves project assignments for authenticated user. */
     projectAssignments: async () => {
       const response = await this.fetch("/users/me/project_assignments")
       const data = (await response.json()) as HarvestResponse.ProjectAssignments
@@ -338,10 +315,6 @@ class Harvest {
   /**
    * Updates Harvest credentials. Reverts to previous values if it fails to retrieve information
    * from Harvest. Returns token, account ID and the user ID for user if successful.
-   *
-   * @param accessToken Generated access token from https://id.getharvest.com/developers
-   * @param accountId Harvest account ID retrieved from https://id.getharvest.com/developers
-   * @returns
    */
   public async setCredentials(accessToken: string, accountId: string) {
     const oldAccessToken = this.accessToken
